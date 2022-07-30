@@ -14,6 +14,7 @@ async function bootstrap() {
     .setTitle(environment.SWAGGER_TITLE)
     .setDescription('A API do Post-it')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
