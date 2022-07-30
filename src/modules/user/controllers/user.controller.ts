@@ -16,7 +16,6 @@ export class UserController {
     private readonly service: UserService,
   ) {}
 
-  @ProtectTo()
   @Get('/list')
   @ApiOperation({ summary: 'Obtém os dados de todos os usuários' })
   @ApiOkResponse({ type: UserProxy, isArray: true })
@@ -25,7 +24,6 @@ export class UserController {
     return this.service.getUsers(search).then(result => result.map(entity => new UserProxy(entity)));
   }
 
-  @ProtectTo()
   @Get(':userId')
   @ApiOperation({ summary: 'Obtém um usuário pela identificação' })
   @ApiOkResponse({ type: UserProxy })
