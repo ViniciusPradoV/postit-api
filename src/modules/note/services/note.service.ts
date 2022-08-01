@@ -26,6 +26,8 @@ export class NoteService {
   }
 
   public async getPublic(requestUser: UserEntity, page: number, postsPerPage: number): Promise<NoteEntity[]> {
+    if(postsPerPage === null) postsPerPage = 4;
+
     return await this.repository.createQueryBuilder('note')
     .andWhere('note.isPublic = :isPublic', { isPublic: true })
     .leftJoinAndMapOne('note.user', 'note.user', 'user')

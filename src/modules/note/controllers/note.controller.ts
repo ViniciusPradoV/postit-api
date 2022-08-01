@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { ProtectTo } from "src/decorators/protect/protect.decorator";
 import { User } from "src/decorators/user/user.decorator";
 import { UserEntity } from "src/modules/user/entities/user.entity";
@@ -33,10 +33,11 @@ export class NoteController {
   }
 
   @ProtectTo()
-  @Get('feed/:page/:postsPerPage')
+  @Get('feed/:page')
   @ApiOperation({ summary: 'Obtém as notas publicas' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
-  public getPublic(@User() requestUser: UserEntity, @Param('page') page: string,  @Param('postsPerPage') postsPerPage: string): Promise<NoteProxy[]> {
+  @ApiQuery({ name: 'search', description: 'Quantidade de posts por página', required: false })
+  public getPublic(@User() requestUser: UserEntity, @Param('page') page: string,  @Query('postsPerPage') postsPerPage: string): Promise<NoteProxy[]> {
     return this.service.getPublic(requestUser, +page, +postsPerPage).then(result => result.map(entity => new NoteProxy(entity)));
   }
 
