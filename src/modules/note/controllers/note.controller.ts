@@ -36,7 +36,7 @@ export class NoteController {
   @Get('feed/:page')
   @ApiOperation({ summary: 'Obtém as notas publicas' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
-  @ApiQuery({ name: 'postPerPage', description: 'Quantidade de posts por página', required: false })
+  @ApiQuery({ name:'postsPerPage', description: 'Quantidade de posts por página', required: false })
   public getPublic(@User() requestUser: UserEntity, @Param('page') page: string,  @Query('postsPerPage') postsPerPage: string): Promise<NoteProxy[]> {
     return this.service.getPublic(requestUser, +page, +postsPerPage).then(result => result.map(entity => new NoteProxy(entity)));
   }
