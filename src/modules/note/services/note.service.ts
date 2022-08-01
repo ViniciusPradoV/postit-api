@@ -1,7 +1,8 @@
 import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { UserEntity } from "src/modules/user/entities/user.entity";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 import { NoteEntity } from "../entities/note.entity";
 import { CreateNotePayload } from "../models/create-note.payload";
 import { UpdateNotePayload } from "../models/update-note.payload";
@@ -25,21 +26,21 @@ export class NoteService {
     });
   }
 
-  public async getPublic(): Promise<NoteEntity[]> {
-    return await this.repository.find({
-      where: {
-        isPublic: true,
-      },
-      order: {
-        updatedAt: 'DESC',
-      },
-      relations: {
-        user: true,
-        comments: {
-          user: true,
-        },
-      },
-    });
+  public getPublic(requestUser: UserEntity): SelectQueryBuilder<NoteEntity> {
+    return this.repository.createQueryBuilder('note')
+    .andWhere('note.isPublic = :isPublic', { isPublic: true })
+    .leftJoinAndMapOne('note.user', 'note.user', 'user')
+    .leftJoinAndMapMany('note.comments', 'note.comments', 'comments')
+    .leftJoinAndMapOne('comments.user', 'comments.user', 'commentUsers')
+    .leftJoinAndMapMany('note.likes', 'note.likes', 'likes', 'likes.userId = :userId', { userId: requestUser.id })
+    .orderBy('note.updatedAt', 'DESC')
+  }
+
+  public async paginatePublic(requestUser: UserEntity, options: IPaginationOptions): Promise<Pagination<NoteEntity>>{
+    const query = this.getPublic(requestUser);
+
+    return await paginate<NoteEntity>(query, options);
+
   }
 
   public async getPublicByUser(userId: number): Promise<NoteEntity[]> {

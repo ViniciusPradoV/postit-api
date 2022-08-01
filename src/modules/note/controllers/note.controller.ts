@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { IPaginationOptions, Pagination } from "nestjs-typeorm-paginate";
 import { ProtectTo } from "src/decorators/protect/protect.decorator";
 import { User } from "src/decorators/user/user.decorator";
 import { UserEntity } from "src/modules/user/entities/user.entity";
+import { NoteEntity } from "../entities/note.entity";
 import { CreateNotePayload } from "../models/create-note.payload";
 import { NoteProxy } from "../models/note.proxy";
 import { UpdateNotePayload } from "../models/update-note.payload";
@@ -36,15 +38,29 @@ export class NoteController {
   @Get('feed')
   @ApiOperation({ summary: 'Obtém as notas publicas' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
-  public getPublic(): Promise<NoteProxy[]> {
-    return this.service.getPublic().then(result => result.map(entity => new NoteProxy(entity)));
+  public getPublic( 
+    @User() requestUser: UserEntity,
+    @Query('page' , new DefaultValuePipe(1), ParseIntPipe)  page: number = 1,
+    @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number = 1): Promise<Pagination<NoteEntity>> {
+
+    const options: IPaginationOptions = {
+
+      limit: limit,
+
+      page: page,
+    };
+
+    return this.service.paginatePublic(requestUser, options);
   }
 
   @ProtectTo()
   @Get(':noteId')
   @ApiOperation({ summary: 'Obtém uma nota' })
   @ApiOkResponse({ type: NoteProxy })
-  public getOne(@User() requestUser: UserEntity, @Param('noteId') noteId: string): Promise<NoteProxy> {
+  public getOne(
+  @User() requestUser: UserEntity, 
+  @Param('noteId') noteId: string): Promise<NoteProxy> {
+    
     return this.service.getOne(requestUser, +noteId).then(entity => new NoteProxy(entity));
   }
 
