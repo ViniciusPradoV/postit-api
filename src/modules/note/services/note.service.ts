@@ -33,7 +33,7 @@ export class NoteService {
     .leftJoinAndMapOne('comments.user', 'comments.user', 'commentUsers')
     .leftJoinAndMapMany('note.likes', 'note.likes', 'likes', 'likes.userId = :userId', { userId: requestUser.id })
     .orderBy('note.updatedAt', 'DESC')
-    .skip((page-1)*4)
+    .skip(page*4)
     .take(4)
     .getMany();
   }
