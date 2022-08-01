@@ -25,7 +25,7 @@ export class NoteService {
     });
   }
 
-  public async getPublic(requestUser: UserEntity, page: number): Promise<NoteEntity[]> {
+  public async getPublic(requestUser: UserEntity, page: number, postsPerPage: number): Promise<NoteEntity[]> {
     return await this.repository.createQueryBuilder('note')
     .andWhere('note.isPublic = :isPublic', { isPublic: true })
     .leftJoinAndMapOne('note.user', 'note.user', 'user')
@@ -33,7 +33,8 @@ export class NoteService {
     .leftJoinAndMapOne('comments.user', 'comments.user', 'commentUsers')
     .leftJoinAndMapMany('note.likes', 'note.likes', 'likes', 'likes.userId = :userId', { userId: requestUser.id })
     .orderBy('note.updatedAt', 'DESC')
-    .take(4)
+    .skip((page-1)*postsPerPage)
+    .take(postsPerPage)
     .getMany();
   }
 

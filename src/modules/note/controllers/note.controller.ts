@@ -25,7 +25,7 @@ export class NoteController {
   }
 
   @ProtectTo()
-  @Get('feed/:userId')
+  @Get('feed/user/:userId')
   @ApiOperation({ summary: 'Obtém as notas publicas de um usuário' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
   public getByUser(@Param('userId') userId: string): Promise<NoteProxy[]> {
@@ -33,11 +33,11 @@ export class NoteController {
   }
 
   @ProtectTo()
-  @Get('feed')
+  @Get('feed/:page/:postsPerPage')
   @ApiOperation({ summary: 'Obtém as notas publicas' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
-  public getPublic(@User() requestUser: UserEntity, @Param('page') page: string): Promise<NoteProxy[]> {
-    return this.service.getPublic(requestUser, +page).then(result => result.map(entity => new NoteProxy(entity)));
+  public getPublic(@User() requestUser: UserEntity, @Param('page') page: string,  @Param('postsPerPage') postsPerPage: string): Promise<NoteProxy[]> {
+    return this.service.getPublic(requestUser, +page, +postsPerPage).then(result => result.map(entity => new NoteProxy(entity)));
   }
 
   @ProtectTo()
