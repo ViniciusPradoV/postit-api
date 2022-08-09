@@ -25,6 +25,18 @@ export class NoteService {
     });
   }
 
+  public async getMePublic(requestUser: UserEntity): Promise<NoteEntity[]> {
+    return await this.repository.find({
+      where: {
+        userId: requestUser.id,
+        isPublic: true,
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+    });
+  }
+
   public async getPublic(requestUser: UserEntity,page: number, postsPerPage: number): Promise<NoteEntity[]> {
     if(postsPerPage == null) postsPerPage = 4;
     return this.repository.createQueryBuilder('note')
