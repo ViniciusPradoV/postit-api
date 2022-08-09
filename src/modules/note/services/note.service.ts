@@ -26,16 +26,15 @@ export class NoteService {
   }
 
   public async getMePublic(requestUser: UserEntity): Promise<NoteEntity[]> {
-    return await this.repository.find({
-      where: {
-        isPublic: true,
-        userId: requestUser.id,
-        user: requestUser
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-    });
+    return this.repository.createQueryBuilder('note')
+      .andWhere('note.user.id = :userId', {userId: requestUser.id})
+      .andWhere('note.isPublic = :isPublic', { isPublic: true })
+      .leftJoinAndMapOne('note.user', 'note.user', 'user')
+      .leftJoinAndMapMany('note.comments', 'note.comments', 'comments')
+      .leftJoinAndMapOne('comments.user', 'comments.user', 'commentUsers')
+      .leftJoinAndMapMany('note.likes', 'note.likes', 'likes', 'likes.userId = :userId', { userId: requestUser.id })
+      .orderBy('note.updatedAt', 'DESC')
+      .getMany();
   }
 
   public async getPublic(requestUser: UserEntity,page: number, postsPerPage: number): Promise<NoteEntity[]> {
