@@ -28,11 +28,11 @@ export class NoteService {
   public async getMePublic(requestUser: UserEntity): Promise<NoteEntity[]> {
     return await this.repository.find({
       where: {
-        userId: requestUser.id,
         isPublic: true,
+        userId: requestUser.id,
       },
       order: {
-        createdAt: 'ASC',
+        createdAt: 'DESC',
       },
     });
   }
