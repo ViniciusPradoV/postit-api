@@ -25,7 +25,7 @@ export class NoteController {
   }
 
   @ProtectTo()
-  @Get('me/public')
+  @Get('myFeed')
   @ApiOperation({ summary: 'Obtém as notas públicas criadas pelo usuário logado' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
   public getMePublic(@User() requestUser: UserEntity): Promise<NoteProxy[]> {
@@ -42,7 +42,7 @@ export class NoteController {
 
   @ProtectTo()
   @Get('feed/:page')
-  @ApiOperation({ summary: 'Obtém as notas publicas' })
+  @ApiOperation({ summary: 'Obtém as notas públicas' })
   @ApiOkResponse({ type: NoteProxy, isArray: true })
   @ApiQuery({ name:'postsPerPage', description: 'Quantidade de posts por página', required: false })
   public getPublic(@User() requestUser: UserEntity, @Param('page') page: string,  @Query('postsPerPage') postsPerPage: string): Promise<NoteProxy[]> {
