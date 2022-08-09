@@ -16,6 +16,14 @@ export class UserController {
     private readonly service: UserService,
   ) {}
 
+  @ProtectTo()
+  @Get('me')
+  @ApiOperation({ summary: 'Obtém o usuário logado' })
+  @ApiOkResponse({ type: UserProxy })
+  public getMe(@User() requestUser: UserEntity): Promise<UserProxy> {
+    return this.service.getMe(requestUser).then(entity => new UserProxy(entity));
+  }
+
   @Get('/list')
   @ApiOperation({ summary: 'Obtém os dados de todos os usuários' })
   @ApiOkResponse({ type: UserProxy, isArray: true })

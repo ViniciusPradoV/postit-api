@@ -5,6 +5,7 @@ import { UserEntity } from "../entities/user.entity";
 import { CreateUserPayload } from "../models/create-user.payload";
 import { UpdateUserPayload } from "../models/update-user.payload";
 import * as bcryptjs from 'bcryptjs';
+import { userInfo } from "os";
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,15 @@ export class UserService {
 
   public getRepository(): Repository<UserEntity> {
     return this.repository;
+  }
+
+  public async getMe(requestUser: UserEntity): Promise<UserEntity>{
+    const user = await this.repository.findOneBy({id: requestUser.id});
+
+    if (!user)
+      throw new NotFoundException('O usuário não foi encontrado');
+
+    return user;
   }
 
   public async getUsers(search: string): Promise<UserEntity[]> {
