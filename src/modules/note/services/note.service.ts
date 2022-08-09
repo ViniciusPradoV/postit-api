@@ -30,6 +30,7 @@ export class NoteService {
       where: {
         isPublic: true,
         userId: requestUser.id,
+        user: requestUser
       },
       order: {
         createdAt: 'DESC',
