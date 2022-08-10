@@ -1,5 +1,6 @@
+import { Options } from "@nestjs/common";
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsString, IsUrl, MinLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUrl, MinLength } from "class-validator";
 
 export class UpdateUserPayload {
   @ApiPropertyOptional()
@@ -16,6 +17,5 @@ export class UpdateUserPayload {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString({ message: 'A URL da imagem deve ser uma string' })
-  @IsUrl({}, { message: 'A URL deve ser válida' })
   public imageUrl?: string;
 }
